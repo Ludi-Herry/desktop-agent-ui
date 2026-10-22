@@ -77,8 +77,8 @@ console.log(result); // 确保 result.cut === 0
 
 本项目深度参考、吸收并致敬以下优秀的上游开源工作与技术成果：
 
-1. **Open Claude UI 手册**：感谢上游手册项目对现代桌面级 Agent 客户端界面拓扑、设计令牌体系、原子控件与架构细节的系统性拆解与开创性整理；
-2. **REA（Reverse Engineered Artifacts）仓库**：感谢 REA 项目提供的底层精度审计、深入逆向洞察与生产级架构参考实现支持；
+1. [**Open Claude UI 手册** (`Caho1/open-claude-ui`)](https://github.com/Caho1/open-claude-ui)：感谢上游手册项目对现代桌面级 Agent 客户端界面拓扑、设计令牌体系、原子控件与架构细节的系统性拆解与开创性整理；
+2. [**REA（Reverse Engineered Artifacts）仓库** (`morluto/rea`)](https://github.com/morluto/rea)：感谢 REA 项目提供的底层精度审计、深入逆向洞察与生产级架构参考实现支持；
 3. 感谢社区相关桌面设计规范与动效物理学 Skill 的启发与贡献。
 
 ---

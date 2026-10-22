@@ -1,6 +1,13 @@
 # 桌面参考实现手册导读与深度工程机制
 
-本手册梳理了现代桌面 Agent 界面系统的两代架构演进（从经典基础设计到 2.0 桌面工程底座），重点拆解结构分层、底层交互物理学、Zero-JS 渲染优化与生产级避坑机制。上游在线完整文档可参考 [openclaudeui.com](https://openclaudeui.com/)。
+本手册梳理了现代桌面 Agent 界面系统的两代架构演进（从经典基础设计到 2.0 桌面工程底座），重点拆解结构分层、底层交互物理学、Zero-JS 渲染优化与生产级避坑机制。
+
+> [!TIP]
+> **如何获取与复刻该设计系统**：
+> 若用户明确希望为应用引入类似 Claude 桌面端的设计系统（Claude Design System），可直接前往上游获取完整资产：
+> - **在线手册与组件预览**：[openclaudeui.com](https://openclaudeui.com/)
+> - **开源代码与组件示例**：[`github.com/Caho1/open-claude-ui`](https://github.com/Caho1/open-claude-ui)（包含完整 Design Tokens 规范与 `code-examples/` 组件代码）
+> - **注意**：若项目已有成熟组件库（如 shadcn/ui），严禁强行替换，直接将本手册中的工程物理机制（如输入法守卫、CSS 滚动动效）迁移至现有组件中即可。
 
 ---
 

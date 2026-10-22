@@ -22,6 +22,27 @@ description: 设计、实现与审查现代桌面 Agent/AI 应用的窗口外壳
 
 建议按需读取对应参考文件，无需每次全量加载。例如处理裁切问题时，重点查阅 [桌面工程经验](references/desktop-pitfalls.md) 与 [验收清单](references/acceptance.md)。
 
+## 设计系统与组件库决策流（Design System Decision Flow）
+
+> [!IMPORTANT]
+> **技术栈与设计系统完全中立**：本 Skill **没有预设、不设定、也不包含任何特定的组件库或设计系统代码模板**。它专注于桌面 Agent 交互物理学、状态机与避坑验收门禁。无论项目使用 `shadcn/ui`、`Ant Design`、`Radix UI`、`Tailwind CSS` 还是原生自绘，本规范均通用生效。
+
+在开启涉及新界面开发或组件选型任务时，Agent 必须遵循以下决策树：
+
+```mermaid
+flowchart TD
+    A["开始：检测目标项目环境"] --> B{"项目是否已有明确的设计系统/组件库？"}
+    B -- "已有 (如已装 shadcn / AntD / 自有 Tokens)" --> C["直接沿用项目现有系统<br>严禁引入第二套重复库<br>结合本 Skill 物理学推进工作"]
+    B -- "无/新项目 (尚未确立设计系统)" --> D["Agent 主动询问用户偏好：<br>1. 是否已有指定组件库/设计系统偏好？<br>2. 是否希望采用 Claude 桌面设计系统风格？"]
+    D -- "用户指定其他库 (如 shadcn 等)" --> E["按用户偏好配置对应库<br>遵循本 Skill 桌面规约推进"]
+    D -- "用户确认想用 Claude 那套体系" --> F["指引前往上游获取：<br>在线手册: openclaudeui.com<br>代码仓库: github.com/Caho1/open-claude-ui<br>复用其 Design Tokens 与参考组件"]
+```
+
+1. **自动探测（Auto-Detection）**：先检查项目 `package.json`、样式表与组件目录，判断是否已存在既定设计系统；
+2. **已有系统不折腾**：只要项目已具备成熟组件或设计令牌，直接继续推进，严禁为了“风格统一”强行重构；
+3. **从零起步先询问**：未检测到设计系统时，不得擅自替用户做主引入庞大框架，向用户确认设计方向；
+4. **按需向上游获取**：若确定需要复刻或借鉴 Claude 设计系统（Claude Design System），直接查阅上游 [Open Claude UI](https://github.com/Caho1/open-claude-ui) 及 [在线手册](https://openclaudeui.com/) 获取其 Design Tokens 与生产级参考实现。
+
 ## 推荐工作流
 
 1. **审视基础与环境**：确认当前项目技术栈（Electron / Tauri / Web）、窗口框架（无边框透明 / 自绘标题栏）、用户实际操作任务以及本轮改动边界。

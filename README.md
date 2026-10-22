@@ -37,6 +37,17 @@
 
 ---
 
+## 💡 设计系统与技术栈边界（Framework & Design System Agnostic）
+
+- **不强制绑定特定组件库**：本 Skill **不设定、不限定任何特定 UI 库**（无论您的项目使用 `shadcn/ui`、`Ant Design`、`Radix UI`、`Tailwind CSS` 还是原生自绘，本规约均 100% 适用）；
+- **不包含预制代码模板**：本 Skill **不包含任何预制的设计系统模板或样式代码包**。它的核心定位是桌面 Agent 场景下的**底层交互物理学、状态机设计原则、输入法防误触与自动化避坑验收门禁**；
+- **Agent 执行决策流**：
+  1. **已有项目**：Agent 优先自动检测项目环境，**严格沿用项目既有的成熟设计系统与组件库**，严禁引入重复依赖；
+  2. **从零起步**：若未检测到既定设计系统，Agent 会主动询问您是否有指定的组件库偏好；
+  3. **若需使用 Claude 设计系统风格**：若您希望复用或参考 Claude 的桌面设计系统（Claude Design System），可直接前往上游 [Open Claude UI](https://github.com/Caho1/open-claude-ui) 与 [在线文档](https://openclaudeui.com/) 获取其完整的 Design Tokens 与组件源码。
+
+---
+
 ## 📂 仓库结构
 
 ```text

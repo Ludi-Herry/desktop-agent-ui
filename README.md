@@ -34,7 +34,13 @@
    - 达到最大高度后局部消除粗糙的灰色系统滚动条外观，同时完整保留原生滚动语义与可访问性。
 6. **多窗口状态一致性与工作区写锁（Broker-Replica）**：
    - 主窗口权威 Broker 与弹出子窗口 Replica 订阅不可变状态流，通过乐观基线锁仲裁并发冲突。
-7. **界面排版、文案与视觉精致度八大铁律（UI Refinement & Craftsmanship）**：
+7. **骨架屏（Skeleton）双模动效与 105° 扫光物理学（Issue #25）**：
+   - 对齐官方 `@ant/desktop 3.6556.2` 生产真值，采用 2.0s、105° 线性倾角扫光（RTL 下精确翻转至 255°）；
+   - 大卡片/Hero 采用 `[data-motion="wave"]` 配合 `--cds-skel-i * 90ms` 级联延迟；密集列表采用 `[data-motion="lockstep"]` 同步微呼吸；
+   - 配合 `data-hold` 延迟揭示防闪烁机制与系统级减弱动效双层守卫。
+8. **附件卡片原生视图过渡（Attachment View Transitions）**：
+   - Composer 附件卡片增删换位全面接入现代 Chromium 原生 View Transitions API，结合 `@starting-style` 进场与 `cds-attachment-out` 退场，达成零复杂 JS 的平滑重排物理流动。
+9. **界面排版、文案与视觉精致度八大铁律（UI Refinement & Craftsmanship）**：
    - 彻底禁用中点 “·” 分隔符，改用布局留白或极细分隔线；
    - 剔除弄脏 UI 界面的冗余副标题与解释性文字，让布局结构自我说明（Let the layout do the explaining）；
    - 界面文案贴合受众，通俗易懂但不口语化，长短精准匹配控件，杜绝生造词；
@@ -42,7 +48,10 @@
    - 统一采用 0.5px 精细微边框，高分屏下呈现轻盈通透质感；
    - 全页字号阶梯严格收敛至 3~4 种，坚守 12px 最小文字门禁，优先借由字重与灰阶表达主次；
    - 收敛交互决策负荷，必要选项就近上下文呈现，信息按优先级秩序化重构；
-   - 克制设定圆角与阴影，坚决封杀卡片左边缘带颜色线条（彩条卡片）的陈旧装饰反模式。
+   - 克制设定圆角与阴影，坚决封杀卡片左边缘带颜色线条（彩条卡片）的陈旧装饰反模式；
+   - 动态数值全量锁死等宽数字（`tabular-nums`），彻底消除 Agent 思考计时与 Token 速率跳动时的左右乱颤；
+   - 标题文本启用 `text-wrap: balance` 防孤字成行，深色模式（Dark Mode）下字重自动下调一档以抵消人眼光晕效应发胖；
+   - 出海多语言短词膨胀保护（顶栏按钮不写死固定像素宽度），阿语 RTL 下终端代码块、运行日志与进度条强制保持 LTR，多语言文本行高 $\ge 1.5$ 防音标削顶。
 
 ---
 
@@ -70,7 +79,7 @@ desktop-agent-ui/
 │   ├── agent-interaction.md          # Agent 交互结构、生命周期与 RICH 委托控制权
 │   ├── components-motion.md          # 核心组件实现、自适应高度配方与动效物理学
 │   ├── acceptance.md                 # 质量验收清单与 clip-audit 审计指南
-│   └── sources.md                    # 架构分类与技术参考索引（ENG-01 ~ ENG-14）
+│   └── sources.md                    # 架构分类与技术参考索引（ENG-01 ~ ENG-17）
 └── scripts/
     └── clip-audit.js                 # 阴影与祖先裁切自动化计算脚本
 ```
@@ -97,9 +106,10 @@ console.log(result); // 确保 result.cut === 0
 
 本项目深度参考、吸收并致敬以下优秀的上游开源工作与技术成果：
 
-1. [**Open Claude UI 手册** (`Caho1/open-claude-ui`)](https://github.com/Caho1/open-claude-ui)（在线文档：[openclaudeui.com](https://openclaudeui.com/)）：感谢上游手册项目对现代桌面级 Agent 客户端界面拓扑、设计令牌体系、原子控件与架构细节的系统性拆解与开创性整理；
-2. [**REA（Reverse Engineered Artifacts）仓库** (`morluto/rea`)](https://github.com/morluto/rea)：感谢 REA 项目提供的底层精度审计、深入逆向洞察与生产级架构参考实现支持；
-3. 感谢社区相关桌面设计规范与动效物理学 Skill 的启发与贡献。
+1. **Anthropic**：致谢 Anthropic 团队打造了卓越的 Claude 桌面端与 Web 客户端体验，其在设计系统（Claude Design System）、人机交互物理学与精致桌面工程标准上的深厚造诣，为整个 AI Agent 桌面应用领域树立了标杆；
+2. [**Open Claude UI 手册** (`Caho1/open-claude-ui`)](https://github.com/Caho1/open-claude-ui)（在线文档：[openclaudeui.com](https://openclaudeui.com/)）：感谢上游手册项目对现代桌面级 Agent 客户端界面拓扑、设计令牌体系、原子控件与架构细节的系统性拆解与开创性整理；
+3. [**REA（Reverse Engineered Artifacts）仓库** (`morluto/rea`)](https://github.com/morluto/rea)：感谢 REA 项目提供的底层精度审计、深入逆向洞察与生产级架构参考实现支持；
+4. 感谢社区相关桌面设计规范与动效物理学 Skill 的启发与贡献。
 
 ---
 

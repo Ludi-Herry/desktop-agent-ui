@@ -1,13 +1,13 @@
 # 桌面参考实现手册导读与深度工程机制
 
-本手册梳理了现代桌面 Agent 界面系统的两代架构演进（从经典基础设计到 2.0 桌面工程底座），重点拆解结构分层、底层交互物理学、Zero-JS 渲染优化与生产级避坑机制。
+本手册梳理了现代桌面 Agent 界面系统从经典基础设计到 4.4212.0 最新工程底座的架构演进，重点拆解结构分层、底层交互物理学、Zero-JS 渲染优化、骨架屏双模动效与生产级避坑机制。
 
 > [!TIP]
 > **如何获取与复刻该设计系统**：
 > 若用户明确希望为应用引入类似 Claude 桌面端的设计系统（Claude Design System），可直接前往上游获取完整资产：
 > - **在线手册与组件预览**：[openclaudeui.com](https://openclaudeui.com/)
-> - **开源代码与组件示例**：[`github.com/Caho1/open-claude-ui`](https://github.com/Caho1/open-claude-ui)（包含完整 Design Tokens 规范与 `code-examples/` 组件代码）
-> - **注意**：若项目已有成熟组件库（如 shadcn/ui），严禁强行替换，直接将本手册中的工程物理机制（如输入法守卫、CSS 滚动动效）迁移至现有组件中即可。
+> - **开源代码与组件示例**：[`github.com/Caho1/open-claude-ui`](https://github.com/Caho1/open-claude-ui)（包含完整 Design Tokens 规范、`code-examples/` 组件代码与 `docs/v4.29.0-4.4212.0/` 全量分析报告）
+> - **注意**：若项目已有成熟组件库（如 shadcn/ui），严禁强行替换，直接将本手册中的工程物理机制（如输入法守卫、CSS 滚动动效、骨架屏双模、附件过渡）迁移至现有组件中即可。
 
 ---
 
@@ -26,17 +26,18 @@
 | **07 工程配置与资产体系** | Build & Asset Topology | 桌面打包拓扑、代码分割、字体子集化内嵌与资产路径管理 |
 | **08 Agent 前端实战指南** | End-to-End Implementation | 将原子组件、状态总线与事件驱动组合为生产级 Agent 工作台的实施流程 |
 
-### 第二代架构进阶（现代生产级桌面平台底座）
+### 第二代至最新基线进阶（4.29.0 – 4.4212.0 官方 CDS 生产底座）
 
-针对大规模长会话、复杂工具调用、多窗口协作与极致渲染性能，现代桌面架构进行了系统级重构：
+针对长会话、复杂工具调用、多窗口协作与极致渲染性能，官方生产包（`@ant/desktop 3.6556.2` 及 `4.29.0 - 4.4212.0` 最新实测分析）确立了现代桌面底座标准：
 
 | 模块 | 演进重点 | 生产级工程要点 |
 | --- | --- | --- |
-| **综述与版本边界** | 架构目标升级 | 明确区分传统纯 Web 封装与现代桌面级原生能力的边界，确立多窗口流式总线 |
-| **独立窗口与任务队列** | 多窗口与离线机制 | 弹出式独立子窗口（Popped-out Window）、离线失败重试队列、Composer 下颌功能行（Chin）与思维深度调节（Effort Tier） |
-| **工作台架构与视觉密度** | 密度治理与用量可视化 | 紧凑（Compact）与舒适（Comfortable）双密度体系、长会话内存回收机制与配额实时消耗投影 |
-| **系统底座解密** | 纯 CSS 动效与时间令牌 | 全量 CSS Keyframes 体系、微秒级时间令牌分层、以及统一命名规范 |
-| **生产级参考实现** | 完整代码模式 | 窗口生命周期管理、多窗通信总线、事件防抖节流与兜底状态机 |
+| **版本边界与分析基线** | 官方 ASAR 运行时真值 | 彻底废弃旧版推断，基于生产包 ASAR 与主进程调试器实测，建立 45 个 `data-cds` 命名空间与 55 个 `@keyframes cds-*` 真实基线 |
+| **骨架屏双模动效** | 扫光与同步呼吸双模 | 2.0s 105° 线性扫光带、`[data-motion="wave"]`（90ms 级联延迟）与 `[data-motion="lockstep"]`（密集列表同步呼吸），`data-hold` 三态时序 |
+| **附件视图过渡** | 原生 View Transitions | Composer 附件卡片增删重排全面接入 Chromium 原生 View Transitions，`@starting-style` 进场与 `cds-attachment-out` 退场 |
+| **角色分离色彩模型** | Accent 与 Brand 解耦 | Accent 角色为纯正蓝色（`#184f95`，用于交互与双环聚焦光晕），Brand 角色为陶土色（Clay `#d97757`，专属于 Claude 触发动作） |
+| **动态密度伸缩体系** | Density Scaling | 控件高度、圆角与间距全系采用 `calc(N * var(--cds-rem-scale, 1))`，支持 Comfortable (14px) 与 Compact 自由切换 |
+| **4.4212.0 增量特性** | 桌面级状态深化 | 窗口失焦去饱和（Window-Inactive Desaturation）、进度扫光指示器（Progress Sweep Indicator）与字重角色分化 |
 
 ---
 
@@ -135,6 +136,33 @@ export function handleComposerKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement
 桌面应用允许将对话、文档或代码预览弹出为独立窗口。多窗口协同面临主进程与各渲染窗口状态分叉的风险：
 - **Broker-Replica 拓扑**：主窗口作为状态权威 Broker，弹出窗口作为 Replica 订阅不可变状态流（Immutable State Stream）；
 - **工作区写锁（Workspace Baseline Lock）**：当子窗口试图写入或修改某个文件对象时，必须先向主进程申领乐观基线锁；主进程比对基线版本哈希，仲裁是否存在冲突，防止并发脏写覆盖。
+
+### 5. 骨架屏（Skeleton）双模动效与 105° 扫光物理学（Issue #25）
+
+官方 `@ant/desktop 3.6556.2` 生产实测表明，粗糙的 90° 水平移动光效与固定时间动画会造成明显的机械廉价感。官方 CDS 骨架屏采用了严密的物理与时序结构：
+
+- **官方结构双层分工**：
+  采用宿主 `SkeletonGroup` / `Skeleton` 配合内部独立的 `.cds-skel-sweep-band` 扫光带子元素，彻底杜绝伪元素位移撑破盒模型的布局 Bug；
+- **真实扫光参数**：
+  `2.0s` / `linear` / `105deg`（在阿拉伯语等 RTL 语言环境下自动翻转为 `255deg`，配合 `:lang(ar/ae/arc/bcc/...)` 精确语言名单与 `animation-direction: reverse`）；
+- **双模动效（Dual-Motion Modes）**：
+  1. **`[data-motion="wave"]` 级联波浪**：用于大卡片与主要内容块，每个骨架块根据其索引变量 `--cds-skel-i` 计算级联延迟：
+     $$\text{delay} = \text{calc}(\text{var}(--\text{cds-skel-i}, 0) \times 90\text{ms})$$
+     形成自上而下、由近及远的优雅物理波浪；
+  2. **`[data-motion="lockstep"]` 齐步呼吸**：用于高度密集列表或数据行，禁用单块错位波浪，全量统一绑定 2.0s `@keyframes cds-skeleton-breathe`，以整体透明度微呼吸（`1.0` $\rightarrow$ `0.6` $\rightarrow$ `1.0`）表达加载，避免密集多行产生波纹闪烁眩晕；
+- **`data-hold` 三态防闪烁机制**：
+  揭示时序提供无 / `none` / `delayed` 三态，极短请求不闪烁，平滑过渡至真实数据；
+- **双层减弱动效守卫**：
+  同时适配 `[data-reduce-motion="true"]` 属性与系统级 `@media (prefers-reduced-motion: reduce)`，降级为静态微透光。
+
+### 6. 附件卡片原生视图过渡（Attachment View Transitions）
+
+Composer 附件卡片（图片、代码文件、文档）在新增、删除或顺序调整时，若直接使用 React 状态更新往往会导致生硬的 DOM 瞬跳。4.4212.0 官方 CDS 全面拥抱现代浏览器的 **View Transitions API**：
+
+- **容器与卡片过渡绑定**：
+  每个附件卡片通过 `view-transition-name: var(--cds-attachment-vt-name)` 声明唯一名称，配合外层 `view-transition-class: cds-attachment-card`；
+- **生命周期状态路由**：
+  利用 `@starting-style` 实现新卡片的弹性膨胀入场，利用 `cds-attachment-out` 实现平滑退场，在支持的环境中自动启用 `@supports (view-transition-group: contain)` 实现局部容器隔离渲染，无需手写复杂的 JavaScript 测距动画库。
 
 ---
 
